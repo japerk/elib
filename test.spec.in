@@ -1,0 +1,4 @@
+{logdir, "@PATH@/log"}.
+{config, "test.config"}.
+{alias, elib, "@PATH@"}.
+{suites, elib, all}.

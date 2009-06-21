@@ -1,0 +1,7 @@
+{"1.5.11", [
+% upgrade instructions
+	{"1.5.10", [{load_module, etable}]}
+], [
+% downgrade instructions
+	{"1.5.10", [{load_module, etable}]}
+]}.

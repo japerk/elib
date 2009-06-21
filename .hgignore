@@ -1,0 +1,6 @@
+syntax: glob
+
+log/
+*.beam
+*~
+test.spec
