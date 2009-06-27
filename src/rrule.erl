@@ -164,76 +164,6 @@ find_day_in_range(Day, BeginningRangeDateTime, EndRangeDateTime, ListDays) ->
 			true -> FoundListDays
 		end.
 
-find_hour_in_range(Hour, Duration, BeginningRangeDateTime, EndRangeDateTime) ->
-	find_hour_in_range(Hour, Duration, BeginningRangeDateTime, EndRangeDateTime, []).
-
-find_hour_in_range(Hour, Duration, BeginningRangeDateTime, EndRangeDateTime, ListHours) ->
-	
-		{BeginningRangeDate, BeginningRangeTime} = BeginningRangeDateTime,
-		{BeginRangeYear, BeginRangeMonth, BeginRangeDay} = BeginningRangeDate,
-		{BeginningRangeHour, BeginningRangeMinute, BeginningRangeSeconds} = BeginningRangeTime,
-
-		TBeginRange = calendar:datetime_to_gregorian_seconds(BeginningRangeDateTime),
-
-		{EndRangeDate, EndRangeTime} = EndRangeDateTime,
-		{EndRangeYear, EndRangeMonth, EndRangeDay} = EndRangeDate,
-		{EndRangeHour, EndRangeMinute, EndRangeSeconds} = EndRangeTime,
-
-
-		TEndRange = calendar:datetime_to_gregorian_seconds(EndRangeDateTime),
-		
-
-		{Begin, End} = if 
-
-								TEndRange - TBeginRange < Duration * 3600 -> {none, none};
-
-								Hour =< EndRangeHour ->
-																NewBeginningDT = { EndRangeDate, {Hour, 0, 0} },
-														
-																Diff = datetime:seconds_diff(NewBeginningDT, EndRangeDateTime),
-																if
-																		Diff < Duration*3600 ->
-																										{
-																											NewBeginningDT,
-																											EndRangeDateTime
-																										};
-																		true -> 
-																										{
-																											NewBeginningDT,
-																											datetime:time_diff(NewBeginningDT, Duration*3600)
-																										}
-																end;
-
-								Hour > EndRangeHour,
-									TEndRange - TBeginRange > 48 ->
-																	{PreviousDay, PreviousTime} = datetime:time_diff(EndRangeDateTime, -3600*24),
-																
-																	{ 
-																		{ PreviousDay, {Hour, 0, 0} },
-																		datetime:time_diff({PreviousDay, {Hour, 0, 0}}, Duration*3600)
-																	};
-																	
-
-								true -> {none, none}
-
-
-							end,
-	
-
-
-		case {Begin, End} of
-
-					{none, none} -> ListHours;
-
-					_ ->	TBegin = calendar:datetime_to_gregorian_seconds(Begin),
-							TEnd = calendar:datetime_to_gregorian_seconds(End),
-
-							if 
-								TBegin =< TEnd ->	find_hour_in_range(Hour, Duration, BeginningRangeDateTime, datetime:time_diff(Begin, -1), [{Begin, End}|ListHours]);
-								true -> ListHours
-							end
-		end.
-
 
 
 satisfy({[], _}, _, _, ListRanges) -> ListRanges;
@@ -300,16 +230,6 @@ satisfy({[{weekday, WeekDay}|Constraints], Duration}, BeginRange, EndRange, List
 
 satisfy({[{hour, Hour}|Constraints], Duration}, BeginRange, EndRange, ListRanges) when is_integer(Hour), Hour > 0, Hour < 25 ->
 
-%		CheckRanges = fun({BeginSubRange, EndSubRange}) ->
-%									satisfy({Constraints, Duration}, BeginSubRange, EndSubRange, {BeginSubRange, EndSubRange})
-%							end,
-
-%		lists:map(
-%						CheckRanges,
-%						find_hour_in_range(Hour, Duration, BeginRange, EndRange)
-%					).
-
-	
 		{BeginRangeDate, BeginRangeTime} = BeginRange,
 		{BeginRangeHour, BeginRangeMinute, BeginRangeSeconds} = BeginRangeTime,
 	
