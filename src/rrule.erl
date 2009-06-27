@@ -341,10 +341,13 @@ satisfy({[{hour, Hour}|Constraints], Duration}, BeginRange, EndRange, ListRanges
 																		DatePlusDuration = datetime:time_diff({Date, {Hour, 0, 0}}, Duration*3600),
 																		{DDDate, DDTime} = DatePlusDuration,
 																		{DDHour, DDMinute, DDSeconds} = DDTime,
-%%% TODOOOOOOOOO comparing in gregorian seconds
+
+																		DatePlusDurationInSec = calendar:datetime_to_gregorian_seconds(DatePlusDuration),
+																		EndRangeInSec = calendar:datetime_to_gregorian_seconds(EndRange),
+
 																		End = if
 																					Date =:= EndRangeDate,
-																					DDHour*3600 >= EndRangeHour*3600+EndRangeMinute*60+EndRangeSeconds -> {EndRangeDate, {EndRangeHour, EndRangeMinute, EndRangeSeconds}};
+																					DatePlusDurationInSec >= EndRangeInSec  -> {EndRangeDate, {EndRangeHour, EndRangeMinute, EndRangeSeconds}};
 			
 																				true -> DatePlusDuration
 																			end,
