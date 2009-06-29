@@ -228,7 +228,9 @@ satisfy({[{weekday, WeekDay}|Constraints], Duration}, BeginRange, EndRange, List
 
 
 
-satisfy({[{hour, Hour}|Constraints], Duration}, BeginRange, EndRange, ListRanges) when is_integer(Hour), Hour > 0, Hour < 25 ->
+satisfy({[{time, Hour}|Constraints], Duration}, BeginRange, EndRange, ListRanges) when is_integer(Hour), Hour > 0, Hour < 25 ->
+						satisfy({[{hour, {Hour, 0}}|Constraints], Duration}, BeginRange, EndRange, ListRanges);
+satisfy({[{time, {Hour, Minutes}}|Constraints], Duration}, BeginRange, EndRange, ListRanges) when is_integer(Hour), Hour > 0, Hour < 25 ->
 
 		{BeginRangeDate, BeginRangeTime} = BeginRange,
 		{BeginRangeHour, BeginRangeMinute, BeginRangeSeconds} = BeginRangeTime,
@@ -244,12 +246,12 @@ satisfy({[{hour, Hour}|Constraints], Duration}, BeginRange, EndRange, ListRanges
 
 														Begin = if
 																	Date =:= BeginRangeDate,
-																		Hour*3600 < BeginRangeHour*3600+60*BeginRangeMinute+BeginRangeSeconds -> {Date, {BeginRangeHour, BeginRangeMinute, BeginRangeSeconds}};
+																		Hour*3600+Minutes*60 < BeginRangeHour*3600+60*BeginRangeMinute+BeginRangeSeconds -> {Date, {BeginRangeHour, BeginRangeMinute, BeginRangeSeconds}};
 
 																	 Date =:= EndRangeDate,
-																	 	Hour > EndRangeHour -> none;
+																	 	Hour*60+Minutes > EndRangeHour*60 -> none;
 
-																	true -> {Date, {Hour, 0, 0}}
+																	true -> {Date, {Hour, Minutes, 0}}
 																end,
 
 														case Begin of
@@ -258,7 +260,7 @@ satisfy({[{hour, Hour}|Constraints], Duration}, BeginRange, EndRange, ListRanges
 																_ -> 
 																
 																
-																		DatePlusDuration = datetime:time_diff({Date, {Hour, 0, 0}}, Duration*3600),
+																		DatePlusDuration = datetime:time_diff({Date, {Hour, Minutes, 0}}, Duration*3600),
 																		{DDDate, DDTime} = DatePlusDuration,
 																		{DDHour, DDMinute, DDSeconds} = DDTime,
 
