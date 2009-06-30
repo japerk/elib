@@ -1,18 +1,22 @@
-%% @doc Datetime conversion functions to convert to and from datetime tuples
-%% for standard formats.
+%% @doc rrule provides a set of function to related to time recurrence.
+%% 
 %%
-%% @type datetime() = {date(), time()}
-%% @type date() = {Year::integer(), Month::integer(), Day::integer()}
-%% @type time() = {Hour::integer(), Min::integer(), Sec::integer()}
-%% @type daterange() = {date(), date()}
+%% @type constraint() = {atom(), term()}
+%% @type rule() = tuple(list(constraint()), DurationInHour::integer())
+%% @type rules() = list(rule())
 %%
 %% @author Bruno Mahe
 -module(rrule).
 
 
--compile(export_all).
+-export([in_range/2]).
+-export([satisfy/3]).
 
 
+%% @doc Convert day of the week into an integer usable by the calendar module
+%% @see calendar:day_of_the_week/1
+%% @see calendar:day_of_the_week/3
+%% @spec day_of_the_week(atom()) -> integer()
 day_of_the_week(monday)    -> 1;
 day_of_the_week(tuesday)   -> 2;
 day_of_the_week(wednesday) -> 3;
@@ -22,6 +26,8 @@ day_of_the_week(saturday)  -> 6;
 day_of_the_week(sunday)    -> 7.
 
 
+%% @doc Convert month name into an integer 
+%% @spec month(atom()) -> integer()
 month(january)   ->  1;
 month(february)  ->  2;
 month(march)     ->  3;
@@ -37,14 +43,6 @@ month(december)  -> 11.
 
 
 
-new() -> [].
-
-%				Constraints                                Duration
-%Rule => {[{month, june}, {weekday, monday}, {hour, 8}], 8}) 
-%Rules => [Rule]
-
-
-add_rule(Rules, Rule) -> [Rule|Rules].
 
 
 find_month_in_range(Month, BeginningRangeDateTime, EndRangeDateTime) ->
@@ -139,10 +137,9 @@ find_day_in_range(Day, BeginningRangeDateTime, EndRangeDateTime) ->
 find_day_in_range(Day, BeginningRangeDateTime, EndRangeDateTime, ListDays) ->
 	
 		{BeginningRangeDate, BeginningRangeTime} = BeginningRangeDateTime,
-		{BeginRangeYear, BeginRangeMonth, BeginRangeDay} = BeginningRangeDate,
 
-		{EndRangeDate, EndRangeTime} = EndRangeDateTime,
-		{EndRangeYear, EndRangeMonth, EndRangeDay} = EndRangeDate,
+		{EndRangeDate, _} = EndRangeDateTime,
+		{_, _, EndRangeDay} = EndRangeDate,
 
 		FoundListDays = case EndRangeDay of
 										Day -> 	BeginSubRange = case EndRangeDate of
@@ -165,18 +162,19 @@ find_day_in_range(Day, BeginningRangeDateTime, EndRangeDateTime, ListDays) ->
 		end.
 
 
+%% @doc Returns a list or ranges which satisfy a list of constraints 
+%% @spec satisfy(rule(), datetime(), datetime()) -> list({datetime(), datetime())
+satisfy({[], _}, When, Until) -> {When, Until};
 
-satisfy({[], _}, _, _, ListRanges) -> ListRanges;
-
-satisfy({[{month, Month}| Constraints], Duration}, BeginRange, EndRange, ListRanges) when is_atom(Month) ->
+satisfy({[{month, Month}| Constraints], Duration}, BeginRange, EndRange) when is_atom(Month) ->
 		ConstraintMonth = month(Month),
 
-		satisfy({[{month, ConstraintMonth}|Constraints], Duration}, BeginRange, EndRange, ListRanges);
+		satisfy({[{month, ConstraintMonth}|Constraints], Duration}, BeginRange, EndRange);
 
-satisfy({[{month, Month}|Constraints], Duration}, BeginRange, EndRange, ListRanges) when is_integer(Month), Month > 0, Month < 13 ->
+satisfy({[{month, Month}|Constraints], Duration}, BeginRange, EndRange) when is_integer(Month), Month > 0, Month < 13 ->
 
 		CheckRanges = fun({BeginSubRange, EndSubRange}) ->
-									satisfy({Constraints, Duration}, BeginSubRange, EndSubRange, {BeginSubRange, EndSubRange})
+									satisfy({Constraints, Duration}, BeginSubRange, EndSubRange)
 							end,
 
 		lists:map(
@@ -184,10 +182,10 @@ satisfy({[{month, Month}|Constraints], Duration}, BeginRange, EndRange, ListRang
 						find_month_in_range(Month, BeginRange, EndRange)
 					);
 
-satisfy({[{day, Day}|Constraints], Duration}, BeginRange, EndRange, ListRanges) when is_integer(Day), Day > 0, Day < 32 ->
+satisfy({[{day, Day}|Constraints], Duration}, BeginRange, EndRange) when is_integer(Day), Day > 0, Day < 32 ->
 
 		CheckRanges = fun({BeginSubRange, EndSubRange}) ->
-									satisfy({Constraints, Duration}, BeginSubRange, EndSubRange, {BeginSubRange, EndSubRange})
+									satisfy({Constraints, Duration}, BeginSubRange, EndSubRange)
 							end,
 
 		lists:map(
@@ -195,7 +193,7 @@ satisfy({[{day, Day}|Constraints], Duration}, BeginRange, EndRange, ListRanges) 
 						find_day_in_range(Day, BeginRange, EndRange)
 					);
 
-satisfy({[{weekday, WeekDay}|Constraints], Duration}, BeginRange, EndRange, ListRanges) when is_atom(WeekDay) ->
+satisfy({[{weekday, WeekDay}|Constraints], Duration}, BeginRange, EndRange) when is_atom(WeekDay) ->
 	
 		{BeginRangeDate, BeginRangeTime} = BeginRange,
 	
@@ -218,7 +216,7 @@ satisfy({[{weekday, WeekDay}|Constraints], Duration}, BeginRange, EndRange, List
 											),
 
 		CheckRanges = fun({BeginSubRange, EndSubRange}) ->
-									satisfy({Constraints, Duration}, BeginSubRange, EndSubRange, {BeginSubRange, EndSubRange})
+									satisfy({Constraints, Duration}, BeginSubRange, EndSubRange)
 							end,
 
 		lists:map(
@@ -228,9 +226,9 @@ satisfy({[{weekday, WeekDay}|Constraints], Duration}, BeginRange, EndRange, List
 
 
 
-satisfy({[{time, Hour}|Constraints], Duration}, BeginRange, EndRange, ListRanges) when is_integer(Hour), Hour > 0, Hour < 25 ->
-						satisfy({[{hour, {Hour, 0}}|Constraints], Duration}, BeginRange, EndRange, ListRanges);
-satisfy({[{time, {Hour, Minutes}}|Constraints], Duration}, BeginRange, EndRange, ListRanges) when is_integer(Hour), Hour > 0, Hour < 25 ->
+satisfy({[{time, Hour}|Constraints], Duration}, BeginRange, EndRange) when is_integer(Hour), Hour > 0, Hour < 25 ->
+						satisfy({[{time, {Hour, 0}}|Constraints], Duration}, BeginRange, EndRange);
+satisfy({[{time, {Hour, Minutes}}|Constraints], Duration}, BeginRange, EndRange) when is_integer(Hour), Hour > 0, Hour < 25 ->
 
 		{BeginRangeDate, BeginRangeTime} = BeginRange,
 		{BeginRangeHour, BeginRangeMinute, BeginRangeSeconds} = BeginRangeTime,
@@ -261,8 +259,6 @@ satisfy({[{time, {Hour, Minutes}}|Constraints], Duration}, BeginRange, EndRange,
 																
 																
 																		DatePlusDuration = datetime:time_diff({Date, {Hour, Minutes, 0}}, Duration*3600),
-																		{DDDate, DDTime} = DatePlusDuration,
-																		{DDHour, DDMinute, DDSeconds} = DDTime,
 
 																		DatePlusDurationInSec = calendar:datetime_to_gregorian_seconds(DatePlusDuration),
 																		EndRangeInSec = calendar:datetime_to_gregorian_seconds(EndRange),
@@ -284,7 +280,7 @@ satisfy({[{time, {Hour, Minutes}}|Constraints], Duration}, BeginRange, EndRange,
 		CheckRanges = fun({BeginSubRange, EndSubRange}) ->
 									case {BeginSubRange, EndSubRange} of
 												{none, none} -> [];
-												_ -> satisfy({Constraints, Duration}, BeginSubRange, EndSubRange, {BeginSubRange, EndSubRange})
+												_ -> satisfy({Constraints, Duration}, BeginSubRange, EndSubRange)
 									end
 							end,
 
@@ -298,15 +294,25 @@ satisfy({[{time, {Hour, Minutes}}|Constraints], Duration}, BeginRange, EndRange,
 
 
 
-%in_range({Constraints, Duration} = Rule, {Date, Time})  ->
-			
-%;
+%% @doc Check if a range match the constraints defined by some rules
+%% @spec in_range(rules(), {datetime(), datetime()}) -> bool()
+in_range(Rules, {When, Until}) when is_list(Rules) -> lists:any(fun(Rule) -> in_range(Rule, {When, Until})end, Rules);
 
-in_range(Rules, {Date, Time} = DateTime) when is_list(Rules) -> lists:any(fun(Rule) -> in_range(Rule, DateTime)end, Rules).
-
-
+in_range(Rule, {When, Until}) when is_tuple(Rule) -> 
 
 
+		Candidates = lists:flatten(
+							satisfy(Rule, When, Until)
+						),
+						
+						
+		lists:any(
+						fun({Begin, End}) ->
+							datetime:range_in_range({When, Until}, {Begin, End})
+						end,
+						Candidates
+
+					).
 
 
-%in_range(Rules, {When, Until}) -> true | false.
+
