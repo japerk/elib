@@ -8,7 +8,7 @@
 %% common_test %%
 %%%%%%%%%%%%%%%%%
 
-all() -> [range_split_years, range_dates, in_range].
+all() -> [range_split_years, range_dates, in_range, range_in_range].
 
 init_per_suite(Config) -> Config.
 
@@ -57,3 +57,17 @@ in_range(_Config) ->
 	false = datetime:in_range(Datetime, FebDateRange),
 	false = datetime:in_range(Datetime, FebDateRange).
 	% TODO: more test cases
+
+
+range_in_range(_Config) ->
+	T1 = {{2006, 3, 13}, {11, 9, 30}},
+	T2 = {{2007, 1,  1}, {11, 9, 30}},
+	T3 = {{2008, 8,  3}, {11, 9, 30}},
+	T4 = {{2009, 2, 27}, {11, 9, 30}},
+	
+	false = datetime:range_in_range({T1, T2}, {T3, T4}),		
+	false = datetime:range_in_range({T3, T4}, {T1, T2}),		
+	true  = datetime:range_in_range({T2, T3}, {T1, T4}),
+	true  = datetime:range_in_range({T2, T3}, {T2, T3}),
+	false = datetime:range_in_range({T1, T3}, {T2, T4}),		
+	false = datetime:range_in_range({T2, T4}, {T1, T3}).		
