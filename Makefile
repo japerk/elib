@@ -22,4 +22,7 @@ clean:
 	rm -f test/*.beam
 	rm test.spec
 
+docs:
+	erl -noshell -run edoc_run application "'elib'" '"."' '"."'
+
 FORCE:

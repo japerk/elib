@@ -20,7 +20,7 @@ start_link(Ref, Delegates) -> gen_fsm:start_link(Ref, ?MODULE, Delegates, []).
 %% @doc Set new delegate specs. Delegates is a list of {Node, Max} where Max
 %% is the maximum number of process that can execute in parallel on the
 %% delegate node.
-%% @spec set_delegates(Ref, [{node(), integer()}]).
+%% @spec set_delegates(Ref, [{node(), integer()}]) -> ok
 set_delegates(Ref, Delegates) ->
 	gen_fsm:send_all_state_event(Ref, {delegates, Delegates}).
 

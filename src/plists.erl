@@ -298,11 +298,11 @@ map(Fun, List, Malt) ->
 	    end,
 	    List, Malt).
 
-%% @author Jacob Perkins
+%% @doc author: Jacob Perkins
 mapfilter(Fun, List) ->
 	mapfilter(Fun, List, 1).
 
-%% @author Jacob Perkins
+%% @doc author: Jacob Perkins
 mapfilter(Fun, List, Malt) ->
 	F = fun(L) -> mapfilter_list(Fun, L) end,
 	Fuse = fun(L1, L2) -> L1 ++ L2 end,
@@ -311,7 +311,7 @@ mapfilter(Fun, List, Malt) ->
 %% @doc Maps list, then filters any items that are false.
 %% @todo Probably would be more efficient if mapping and filtering happended
 %% in the same pass.
-%% @author Jacob Perkins
+%% author: Jacob Perkins
 mapfilter_list(Fun, List) ->
 	Filter = fun(false) -> false; (_) -> true end,
 	lists:filter(Filter, lists:map(Fun, List)).
@@ -337,11 +337,11 @@ partition(Fun, List, Malt) ->
 % SORTMALT needs to be tuned
 -define(SORTMALT, 100).
 
-%% @author Jacob Perkins
+%% @doc author: Jacob Perkins
 keysort(N, List) ->
 	keysort(N, List, ?SORTMALT).
 
-%% @author Jacob Perkins
+%% @doc author: Jacob Perkins
 keysort(N, List, Malt) ->
 	F = fun(L) -> lists:keysort(N, L) end,
 	Fuse = fun(L1, L2) -> lists:keymerge(N, L1, L2) end,
@@ -379,11 +379,11 @@ sort(Fun, List, Malt) ->
     end,
     runmany(Fun2, {recursive, Fuse}, List, Malt).
 
-%% @author Jacob Perkins
+%% @doc author: Jacob Perkins
 umerge(Lists) ->
 	umerge(Lists, ?SORTMALT).
 
-%% @author Jacob Perkins
+%% @doc author: Jacob Perkins
 umerge(Lists, Malt) ->
 	F = fun(L) -> lists:umerge(L) end,
 	Fuse = fun(L1, L2) -> lists:umerge(L1, L2) end,

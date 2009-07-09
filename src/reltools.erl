@@ -17,10 +17,10 @@ base_opts(Root) ->
 make_release(Name) -> make_release(Name, code:root_dir()).
 
 % TODO: adapt make_release to do what actually works for creating a first-target
-% system. Could actually go in & edit bin/erl and bin/start, as well as make
+% system. Could actually go in and edit bin/erl and bin/start, as well as make
 % RELEASES file and start_erl.data file, and copy in start.boot. Then it would
 % be complete except for CLI args, but those could be included as a string option.
-% Can assume code:root_dir() is for erts location & boot stuff, but pass in 
+% Can assume code:root_dir() is for erts location and boot stuff, but pass in 
 % opts with additional dir info.
 
 %% @doc Uses systools to make boot scripts and release package. Opts should only
@@ -38,7 +38,7 @@ make_release(Name, Root) ->
 % NOTE: for this to work, need to use erl from the target system, which is probably
 % not the one in your PATH
 make_upgrade(Name) ->
-	% make sure sasl & release_handler is started
+	% make sure sasl and release_handler is started
 	application:start(sasl),
 	{Old, Vsn} = current_release(),
 	% old release file location is $ROOT/releases/Vsn/Old.rel
