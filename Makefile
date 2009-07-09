@@ -23,7 +23,6 @@ clean:
 	rm test.spec
 
 doc: FORCE
-	@erl -noshell -run edoc_run application elib '"."' \
-		'[{new, true}, {app_default, "http://www.erlang.org/"}]'
+	@erl -noshell -run edoc_run application elib '"."' '[{new, true}]'
 
 FORCE:
