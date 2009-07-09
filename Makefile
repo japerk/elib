@@ -22,7 +22,8 @@ clean:
 	rm -f test/*.beam
 	rm test.spec
 
-docs:
-	erl -noshell -run edoc_run application elib '"."' '"."'
+doc: FORCE
+	@erl -noshell -run edoc_run application elib '"."' \
+		'[{new, true}, {app_default, "http://www.erlang.org/"}]'
 
 FORCE:

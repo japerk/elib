@@ -1,3 +1,7 @@
+%% @author Philip Robinson
+%% @doc Erlang Macro Processor.
+%% See [http://chlorophil.blogspot.com/2007/04/erlang-macro-processor-v2-part-i.html]
+
 -module(emp2).
 -author("Philip Robinson").
 -vsn('1.0').

@@ -1,4 +1,5 @@
 % @author Stephen Marsh
+% @author Jacob Perkins
 % @copyright 2007 Stephen Marsh freeyourmind ++ [$@|gmail.com]
 % @doc plists is a drop-in replacement for module
 % <a href="http://www.erlang.org/doc/man/lists.html">lists</a>,
@@ -308,10 +309,9 @@ mapfilter(Fun, List, Malt) ->
 	Fuse = fun(L1, L2) -> L1 ++ L2 end,
 	runmany(F, Fuse, List, Malt).
 
-%% @doc Maps list, then filters any items that are false.
+%% @doc Maps list, then filters any items that are false. author: Jacob Perkins
 %% @todo Probably would be more efficient if mapping and filtering happended
 %% in the same pass.
-%% author: Jacob Perkins
 mapfilter_list(Fun, List) ->
 	Filter = fun(false) -> false; (_) -> true end,
 	lists:filter(Filter, lists:map(Fun, List)).

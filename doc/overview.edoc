@@ -1,5 +1,9 @@
-@author Jacob Perkins <jacob@weotta.com>
-@copyright 2009 Weotta
-@version 1.5.11
+@author Jacob Perkins
+@copyright 2009 Mr Buzz, Inc.
+@version {@version}
 @title Elib
 @doc Extra erlang modules.
+
+{@link plists} is by Stephen Marsh, except for {@link plists:keysort/2}, {@link plists:keysort/3}, {@link plists:mapfilter/2}, {@link plists:mapfilter/3}, {@link plists:mapfilter_list/2}, {@link plists:umerge/1}, {@link plists:umerge/2}. Modifications to {@link plists} are released under the MIT License and Copyright (c) 2009 Mr Buzz, Inc.
+
+{@link emp2} is by Philip Robinson.
