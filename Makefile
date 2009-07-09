@@ -23,6 +23,6 @@ clean:
 	rm test.spec
 
 docs:
-	erl -noshell -run edoc_run application "'elib'" '"."' '"."'
+	erl -noshell -run edoc_run application elib '"."' '"."'
 
 FORCE:
