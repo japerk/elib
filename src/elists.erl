@@ -20,11 +20,13 @@
 
 -module(elists).
 
--export([mapfilter/2, splitmany/2]).
+-export([prepend/2, mapfilter/2, splitmany/2]).
 
-%% @doc Combines map and filter into 1 operation.
-%% Like map, calls F on each item in List. But if F returns false, then the
-%% result is ignored.
+%% @equiv [Elem | List]
+prepend(Elem, List) -> [Elem | List].
+
+%% @doc Combines map and filter into 1 operation. Like map, calls F on each
+%% item in List. But if F returns false, then the result is dropped.
 %% @spec mapfilter(F::function(), List::list()) -> list()
 mapfilter(F, List) -> lists:reverse(mapfilter(F, List, [])).
 
@@ -36,6 +38,9 @@ mapfilter(F, [Item | Rest], Results) ->
 		Term -> mapfilter(F, Rest, [Term | Results])
 	end.
 
+%% @doc Split `List' into many lists, each with `N' elements. The last list
+%% may contain less than `N' elements.
+%% @spec splitmany(N::integer(), List::list()) -> [list()]
 splitmany(N, List) -> lists:reverse(splitmany(N, List, [])).
 
 splitmany(_, [], Split) ->
