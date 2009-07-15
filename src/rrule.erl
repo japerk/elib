@@ -11,6 +11,7 @@
 
 -export([in_range/2]).
 -export([satisfy/3]).
+-export([merge_datetimes/3, merge_datetimes/1]).
 
 
 %% @doc Convert day of the week into an integer usable by the calendar module
@@ -289,9 +290,30 @@ satisfy({[{time, {Hour, Minutes}}|Constraints], Duration}, BeginRange, EndRange)
 						CompleteDates
 					).
 
+%% @doc Merge a list of datetimes.
+%% @spec merge_datetimes(list(datetime())) -> list(datetime())
+merge_datetimes(DateTimes) ->
+				merge_datetimes(DateTimes, DateTimes, []).
 
-	
+merge_datetimes(DTs, [DateTime|ListDateTimes], Result) ->
+			{DTBegin, DTEnd} = DateTime,
 
+			Merge = lists:map(
+										fun({DB, DE}) when  DTBegin < DB andalso DB < DTEnd ->
+														if
+															DTEnd < DE -> {DTBegin, DE};
+															true 			->	[]
+														end;
+												({ {{_},{_}}, {{_}, {_}} }) ->
+														[]
+
+										end,
+										DTs
+									),
+			merge_datetimes(DTs, ListDateTimes, [DateTime,Merge|Result]);
+
+merge_datetimes(_, [], Result) ->
+				lists:flatten(Result).
 
 
 %% @doc Check if a range match the constraints defined by some rules
@@ -310,7 +332,8 @@ in_range(Rule, {When, Until}) when is_tuple(Rule) ->
 						fun({Begin, End}) ->
 							datetime:range_in_range({When, Until}, {Begin, End})
 						end,
-						Candidates
+						
+						merge_datetimes(Candidates, Candidates, [])
 
 					).
 
