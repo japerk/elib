@@ -259,7 +259,7 @@ satisfy({[{time, {Hour, Minutes}}|Constraints], Duration}, BeginRange, EndRange)
 																_ -> 
 																
 																
-																		DatePlusDuration = datetime:time_diff({Date, {Hour, Minutes, 0}}, Duration*3600),
+																		DatePlusDuration = datetime:time_diff({Date, {Hour, Minutes, 0}}, Duration),
 
 																		DatePlusDurationInSec = calendar:datetime_to_gregorian_seconds(DatePlusDuration),
 																		EndRangeInSec = calendar:datetime_to_gregorian_seconds(EndRange),
@@ -300,16 +300,17 @@ merge_datetimes(DTs, [DateTime|ListDateTimes], Result) ->
 
 			Merge = lists:map(
 										fun({DB, DE}) when  DTBegin < DB andalso DB < DTEnd ->
+
 														if
 															DTEnd < DE -> {DTBegin, DE};
 															true 			->	[]
 														end;
-												({ {{_},{_}}, {{_}, {_}} }) ->
+												({ {{_,_,_},{_,_,_}}, {{_,_,_}, {_,_,_}} }) ->
 														[]
-
 										end,
 										DTs
 									),
+
 			merge_datetimes(DTs, ListDateTimes, [DateTime,Merge|Result]);
 
 merge_datetimes(_, [], Result) ->
