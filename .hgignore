@@ -5,4 +5,5 @@ log/
 *~
 test.spec
 *.html
+*.swp
 doc/*

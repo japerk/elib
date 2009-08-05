@@ -28,7 +28,7 @@
 
 -export([fromstring/1, tostring/1, iso_datetime/1, iso_string/1]).
 -export([time_diff/2, seconds_diff/2]).
--export([range_split_years/1, range_dates/1, in_range/2]).
+-export([range_split_years/1, range_dates/1, in_range/2, range_in_range/2]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %% string conversions %%
@@ -111,7 +111,7 @@ range_split_years(Ranges, Year, Until) ->
 	range_split_years([{{Year, 1, 1}, {Year, 12, 31}} | Ranges], Year + 1, Until).
 
 %% @doc Expand the date range into a list of all dates included in the range.
-%% @spec range_dates(daterane()) -> [date()]
+%% @spec range_dates(daterange()) -> [date()]
 range_dates({When, Until}) when Until < When ->
 	[];
 range_dates({When, When}) ->
@@ -126,6 +126,8 @@ range_dates(Dates, Days, Until) ->
 	Date = calendar:gregorian_days_to_date(Days),
 	range_dates([Date | Dates], Days + 1, Until).
 
+%% @doc Check if a date is within a range.
+%% @spec in_range(date(), daterange()) -> bool()
 in_range({_, _, _}=Date, {When, Until}) ->
 	in_range({Date, {0, 0, 0}}, {When, Until});
 in_range(Datetime, {{_, _}=When, {_, _}=Until}) ->
@@ -134,3 +136,16 @@ in_range(Datetime, {{_, _, _}=When, {_, _, _}=Until}) ->
 	in_range(Datetime, {{When, {0, 0, 0}}, {Until, {23, 59, 59}}});
 in_range(_, _) ->
 	throw(badarg).
+
+%% @doc Check if a range is within another range.
+%% @spec in_range(daterange(), daterange()) -> bool()
+range_in_range({{_, _}=Begin, {_, _}=End}, {{_, _}=When, {_, _}=Until}) ->
+	BeginInRange = in_range(Begin, {When, Until}),
+	EndInRange   = in_range(End, {When, Until}),
+	BeginInRange andalso EndInRange;
+range_in_range(_, _) ->
+	throw(badarg).
+
+
+	
+
