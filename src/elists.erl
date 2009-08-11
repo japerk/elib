@@ -20,7 +20,7 @@
 
 -module(elists).
 
--export([prepend/2, mapfilter/2, splitmany/2]).
+-export([prepend/2, mapfilter/2, mapfilter_chain/2, splitmany/2]).
 
 %% @equiv [Elem | List]
 prepend(Elem, List) -> [Elem | List].
@@ -36,6 +36,14 @@ mapfilter(F, [Item | Rest], Results) ->
 	case F(Item) of
 		false -> mapfilter(F, Rest, Results);
 		Term -> mapfilter(F, Rest, [Term | Results])
+	end.
+
+mapfilter_chain([], Item) ->
+	Item;
+mapfilter_chain([F | Rest], Item) ->
+	case F(Item) of
+		false -> false;
+		Item2 -> mapfilter_chain(Rest, Item2)
 	end.
 
 %% @doc Split `List' into many lists, each with `N' elements. The last list
