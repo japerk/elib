@@ -58,6 +58,7 @@ queue_len(Ref) -> gen_fsm:sync_send_all_state_event(Ref, queue_len).
 %%%%%%%%%%%%%
 
 init(Delegates) ->
+	process_flag(trap_exit, true),
 	Procs = dict:from_list([{Node, 0} || {Node, _} <- Delegates]),
 	{ok, processing, #delegation_state{procs=Procs, delegates=Delegates}}.
 
@@ -89,12 +90,16 @@ handle_info({done, Node}, processing, State) ->
 handle_info({done, _}, singleton, State) ->
 	{Next, State2} = process_state(State),
 	{next_state, Next, State2};
+handle_info({'EXIT', Pid, _}, Current, State) ->
+	handle_info({done, node(Pid)}, Current, State);
 handle_info(_, Current, State) ->
 	{next_state, Current, State}.
 
 terminate(_, _, _) -> ok.
 
-code_change(_, Current, State, _) -> {ok, Current, State}.
+code_change(_, Current, State, _) ->
+	process_flag(trap_exit, true),
+	{ok, Current, State}.
 
 %%%%%%%%%%%%%%%%
 %% processing %%
@@ -206,10 +211,11 @@ spawn_delegate({Module, Function, Args}, Node) ->
 	Pid = self(),
 	
 	F = fun() ->
-			apply(Module, Function, Args),
+			% use catch so that errors are ignored
+			catch apply(Module, Function, Args),
 			% send a process message so that we can test using a normal
 			% receive block, instead of mocking a gen_fsm
 			Pid ! {done, node()}
 		end,
-	
-	proc_lib:spawn(Node, F).
+	% we are trapping exits (can't monitor pids if spawning on different nodes)
+	proc_lib:spawn_link(Node, F).

@@ -1,5 +1,6 @@
-{"1.5.13", [
+{"1.5.14", [
 % upgrade instructions
+	{"1.5.13", [{update, delegation_server, {advanced, []}}]},
 	{"1.5.12", [
 		{add_module, rrule},
 		{load_module, datetime},
@@ -9,6 +10,7 @@
 	{"1.5.10", [{load_module, etable}]}
 ], [
 % downgrade instructions
+	{"1.5.13", [{update, delegation_server, {advanced, []}}]},
 	{"1.5.12", [
 		{delete_module, rrule},
 		{load_module, datetime},
