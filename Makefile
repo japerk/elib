@@ -5,8 +5,11 @@ all: src
 src: FORCE
 	@$(ERL) -pa ebin -make
 
+plt:
+	@dialyzer --build_plt --plt .plt -q -r . -I include/
+
 check: src
-	@dialyzer -q -r . -I include/ \
+	@dialyzer --check_plt --plt .plt -q -r . -I include/ \
 		-I $(ERL_LIBS)/test_server*/include/ \
 		-I $(ERL_LIBS)/common_test*/include/
 

@@ -20,7 +20,7 @@
 
 -module(elists).
 
--export([prepend/2, mapfilter/2, mapfilter_chain/2, splitmany/2]).
+-export([prepend/2, mapfilter/2, mapfilter_chain/2, sort_chain_generator/1, splitmany/2]).
 
 %% @equiv [Elem | List]
 prepend(Elem, List) -> [Elem | List].
@@ -44,6 +44,17 @@ mapfilter_chain([F | Rest], Item) ->
 	case F(Item) of
 		false -> false;
 		Item2 -> mapfilter_chain(Rest, Item2)
+	end.
+
+sort_chain_generator(SortFuns) -> fun(A, B) -> sort_chain(SortFuns, A, B) end.
+
+sort_chain([], _, _) ->
+	true;
+sort_chain([F | Rest], A, B) ->
+	case F(A, B) of
+		true -> true;
+		false -> false;
+		undefined -> sort_chain(Rest, A, B)
 	end.
 
 %% @doc Split `List' into many lists, each with `N' elements. The last list
