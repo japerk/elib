@@ -236,18 +236,18 @@ foldl(Context, F, Acc0, Table, Spec, NObject, Lock) ->
 	T = fun() ->
 			case mnesia:select(Table, Spec, NObject, Lock) of
 				'$end_of_table' -> Acc0;
-				{Objs, Cont} -> foldl2(F, Acc0, Cont, Objs)
+				{Objs, Cont} -> foldl2(F, Acc0, Objs, Cont)
 			end
 		end,
 	
 	mnesia:activity(Context, T).
 
-foldl2(F, Acc, Cont, Objs) ->
+foldl2(F, Acc, Objs, Cont) ->
 	Acc2 = lists:foldl(F, Acc, Objs),
 	
 	case mnesia:select(Cont) of
 		'$end_of_table' -> Acc2;
-		{More, Cont2} -> foldl2(F, Acc2, Cont2, More)
+		{More, Cont2} -> foldl2(F, Acc2, More, Cont2)
 	end.
 
 %%%%%%%%%%%%%

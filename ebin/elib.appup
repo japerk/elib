@@ -1,5 +1,9 @@
-{"1.5.15", [
+{"1.5.16", [
 % upgrade instructions
+	{"1.5.15", [
+		{load_module, etable},
+		{add_module, ptable}
+	]},
 	{"1.5.14", [{load_module, elists}]},
 	{"1.5.13", [{update, delegation_server, {advanced, []}}]},
 	{"1.5.12", [
@@ -11,6 +15,10 @@
 	{"1.5.10", [{load_module, etable}]}
 ], [
 % downgrade instructions
+	{"1.5.15", [
+		{load_module, etable},
+		{add_module, ptable}
+	]},
 	{"1.5.14", [{load_module, elists}]},
 	{"1.5.13", [{update, delegation_server, {advanced, []}}]},
 	{"1.5.12", [

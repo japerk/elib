@@ -20,7 +20,15 @@
 
 -module(elists).
 
--export([prepend/2, mapfilter/2, mapfilter_chain/2, sort_chain_generator/1, splitmany/2]).
+-export([first/2, prepend/2, mapfilter/2, mapfilter_chain/2,
+		 sort_chain_generator/1, splitmany/2]).
+
+%% @doc Return the first element where F returns true, or none.
+first(F, List) ->
+	case lists:dropwhile(fun(Elem) -> not F(Elem) end, List) of
+		[First | _] -> First;
+		[] -> none
+	end.
 
 %% @equiv [Elem | List]
 prepend(Elem, List) -> [Elem | List].
