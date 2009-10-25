@@ -17,7 +17,7 @@
 % downgrade instructions
 	{"1.5.15", [
 		{load_module, etable},
-		{add_module, ptable}
+		{delete_module, ptable}
 	]},
 	{"1.5.14", [{load_module, elists}]},
 	{"1.5.13", [{update, delegation_server, {advanced, []}}]},
