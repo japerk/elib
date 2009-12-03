@@ -1,5 +1,9 @@
-{"1.5.16", [
+{"1.5.17", [
 % upgrade instructions
+	{"1.5.16", [
+		{load_module, estring},
+		{add_module, efile}
+	]},
 	{"1.5.15", [
 		{load_module, etable},
 		{add_module, ptable}
@@ -15,6 +19,10 @@
 	{"1.5.10", [{load_module, etable}]}
 ], [
 % downgrade instructions
+	{"1.5.16", [
+		{load_module, estring},
+		{delete_module, efile}
+	]},
 	{"1.5.15", [
 		{load_module, etable},
 		{delete_module, ptable}
