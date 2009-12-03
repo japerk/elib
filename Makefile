@@ -1,4 +1,5 @@
 ERL=erl
+ERL_LIBS=$(shell erl -eval 'io:format("~s~n", [code:lib_dir()])' -s init stop -noshell)
 
 all: src
 
@@ -6,7 +7,7 @@ src: FORCE
 	@$(ERL) -pa ebin -make
 
 plt:
-	@dialyzer --build_plt --plt .plt -q -r . -I include/
+	@dialyzer --build_plt --output_plt .plt -q -r . -I include/
 
 check: src
 	@dialyzer --check_plt --plt .plt -q -r . -I include/ \
