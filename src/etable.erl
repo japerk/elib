@@ -30,6 +30,8 @@
 -export([foreach/2, foreach/3, foreach/4, foreach/6]).
 -export([ets_foreach/2, ets_foreach/3, ets_foreach/4]).
 -export([ets_update_counter/2, ets_update_counter/3]).
+-export([dets_foreach/3, dets_foreach/4]).
+-export([dets_update_counter/2, dets_update_counter/3]).
 
 %%%%%%%%%%%%%%%%%%%%%%
 %% table management %%
@@ -300,9 +302,9 @@ foreach2(F, Objs, Cont) ->
 		{More, Cont2} -> foreach2(F, More, Cont2)
 	end.
 
-%%%%%%%%%%%%%%%%%
-%% ets foreach %%
-%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%
+%% ets utils %%
+%%%%%%%%%%%%%%%
 
 ets_foreach(F, Table) -> ets_foreach_iter(F, Table, ets:first(Table)).
 
@@ -328,10 +330,6 @@ ets_foreach2(F, Objs, Cont) ->
 		{More, Cont2} -> ets_foreach2(F, More, Cont2)
 	end.
 
-%%%%%%%%%%%%%%%%%%%%%%%%
-%% ets update counter %%
-%%%%%%%%%%%%%%%%%%%%%%%%
-
 ets_update_counter(Table, Key) -> ets_update_counter(Table, Key, 1).
 
 ets_update_counter(Table, Key, Count) ->
@@ -339,8 +337,39 @@ ets_update_counter(Table, Key, Count) ->
 		false ->
 			% ets:insert is much faster than ets:insert_new
 			true = ets:insert(Table, {Key, Count}),
-			1;
+			Count;
 		true ->
 			% ets:update_counter throws badarg if Key doesn't exist
 			ets:update_counter(Table, Key, Count)
+	end.
+
+%%%%%%%%%%%%%%%%
+%% dets utils %%
+%%%%%%%%%%%%%%%%
+
+dets_foreach(F, Table, Spec) -> dets_foreach(F, Table, Spec, 100).
+
+dets_foreach(F, Table, Spec, Limit) ->
+	case dets:select(Table, Spec, Limit) of
+		'$end_of_table' -> ok;
+		{Objs, Cont} -> dets_foreach2(F, Objs, Cont)
+	end.
+
+dets_foreach2(F, Objs, Cont) ->
+	lists:foreach(F, Objs),
+	
+	case dets:select(Cont) of
+		'$end_of_table' -> ok;
+		{More, Cont2} -> dets_foreach2(F, More, Cont2)
+	end.
+
+dets_update_counter(Table, Key) -> dets_update_counter(Table, Key, 1).
+
+dets_update_counter(Table, Key, Count) ->
+	case dets:member(Table, Key) of
+		false ->
+			dets:insert(Table, {Key, Count}),
+			Count;
+		true ->
+			dets:update_counter(Table, Key, Count)
 	end.
