@@ -350,17 +350,28 @@ ets_update_counter(Table, Key, Count) ->
 dets_foreach(F, Table, Spec) -> dets_foreach(F, Table, Spec, 100).
 
 dets_foreach(F, Table, Spec, Limit) ->
+	dets:safe_fixtable(Table, true),
+	
 	case dets:select(Table, Spec, Limit) of
-		'$end_of_table' -> ok;
-		{Objs, Cont} -> dets_foreach2(F, Objs, Cont)
+		'$end_of_table' ->
+			dets:safe_fixtable(Table, false);
+		{error, Reason} ->
+			error_logger:error_report([dets_foreach, {table, Table},
+				{spec, Spec}, {error, Reason}]);
+		{Objs, Cont} ->
+			dets_foreach2(F, Table, Objs, Cont)
 	end.
 
-dets_foreach2(F, Objs, Cont) ->
+dets_foreach2(F, Table, Objs, Cont) ->
 	lists:foreach(F, Objs),
 	
 	case dets:select(Cont) of
-		'$end_of_table' -> ok;
-		{More, Cont2} -> dets_foreach2(F, More, Cont2)
+		'$end_of_table' ->
+			dets:safe_fixtable(Table, false);
+		{error, Reason} ->
+			error_logger:error_report([dets_foreach2, {table, Table}, {error, Reason}]);
+		{More, Cont2} ->
+			dets_foreach2(F, Table, More, Cont2)
 	end.
 
 dets_update_counter(Table, Key) -> dets_update_counter(Table, Key, 1).
