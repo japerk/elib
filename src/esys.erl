@@ -11,6 +11,4 @@ handle_debug(Deb, Module, Event) ->
 	sys:handle_debug(Deb, {?MODULE, write_debug}, Module, Event).
 
 write_debug(Dev, Event, Module) ->
-	%{_, Time} = calendar:local_time(),
-	Time = erlang:now(),
-	io:format(Dev, "~p: ~p @ ~p~n", [Event, Module, Time]).
+	io:format(Dev, "~p: ~p @ ~p~n", [Event, Module, erlang:now()]).
