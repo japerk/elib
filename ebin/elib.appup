@@ -21,7 +21,7 @@
 	{"1.5.10", [{load_module, etable}]}
 ], [
 % downgrade instructions
-	{"1.5.18", [{add_module, esys}]},
+	{"1.5.18", [{delete_module, esys}]},
 	{"1.5.17", [{load_module, etable}]},
 	{"1.5.16", [
 		{load_module, estring},
