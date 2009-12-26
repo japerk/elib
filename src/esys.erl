@@ -11,4 +11,4 @@ handle_debug(Deb, Module, Event) ->
 	sys:handle_debug(Deb, {?MODULE, write_debug}, Module, Event).
 
 write_debug(Dev, Event, Module) ->
-	io:format(Dev, "~p: ~p @ ~p~n", [Event, Module, erlang:now()]).
+	io:format(Dev, "~p: ~p @ ~p~n", [Module, Event, erlang:now()]).
