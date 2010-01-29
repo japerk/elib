@@ -40,15 +40,17 @@ load_apps(Apps) ->
 	lists:foreach(fun application:load/1, Apps),
 	lists:foreach(fun init_env/1, Apps).
 
-start_apps(App) when is_atom(App) ->
+start_app(App) when is_atom(App) ->
 	application:load(App),
+	init_env(App),
 	{ok, Deps} = application:get_key(App, applications),
-	start_apps(Deps ++ [App]);
+	lists:foreach(fun start_app/1, Deps),
+	application:start(App).
+
+start_apps(App) when is_atom(App) -> start_app(App);
 %% @doc Start applications with optional common test config values.
 %% @spec start_apps([Application::atom()]) -> ok
 %%
 %% @see load_apps/1
 %% @see application:start/1
-start_apps(Apps) ->
-	load_apps(Apps),
-	lists:foreach(fun application:start/1, Apps).
+start_apps(Apps) -> lists:foreach(fun start_app/1, Apps).
