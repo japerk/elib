@@ -1,5 +1,6 @@
-{"1.5.20", [
+{"1.5.21", [
 % upgrade instructions
+	{"1.5.20", [{load_module, elists}]},
 	{"1.5.19", [{load_module, etable}]},
 	{"1.5.18", [{add_module, esys}]},
 	{"1.5.17", [{load_module, etable}]},
@@ -22,6 +23,7 @@
 	{"1.5.10", [{load_module, etable}]}
 ], [
 % downgrade instructions
+	{"1.5.20", [{load_module, elists}]},
 	{"1.5.19", [{load_module, etable}]},
 	{"1.5.18", [{delete_module, esys}]},
 	{"1.5.17", [{load_module, etable}]},

@@ -21,7 +21,7 @@
 -module(elists).
 
 -export([first/2, prepend/2, mapfilter/2, mapfilter_chain/2,
-		 sort_chain_generator/1, splitmany/2]).
+		 propmerge/3, sort_chain_generator/1, splitmany/2, union/2]).
 
 %% @doc Return the first element where F returns true, or none.
 first(F, List) ->
@@ -54,6 +54,12 @@ mapfilter_chain([F | Rest], Item) ->
 		Item2 -> mapfilter_chain(Rest, Item2)
 	end.
 
+%% @doc Merge 2 proplists. F is called for any value that does not compare
+%% equal, and should return the value to keep. This is a convience wrapper
+%% around dict:merge/3.
+propmerge(F, L1, L2) ->
+	dict:to_list(dict:merge(F, dict:from_list(L1), dict:from_list(L2))).
+
 sort_chain_generator(SortFuns) -> fun(A, B) -> sort_chain(SortFuns, A, B) end.
 
 sort_chain([], _, _) ->
@@ -77,3 +83,5 @@ splitmany(N, List, Split) when length(List) < N ->
 splitmany(N, List, Split) ->
 	{Part, Rest} = lists:split(N, List),
 	splitmany(N, Rest, [Part | Split]).
+
+union(L1, L2) -> sets:to_list(sets:union(sets:from_list(L1), sets:from_list(L2))).
