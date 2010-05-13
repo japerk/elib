@@ -2,7 +2,7 @@
 %% Helper module for using the osmos on-disk ordered set key-value store.
 -module(ots).
 
--export([open/3, open/4]).
+-export([open/3, open/4, close/1]).
 -export([clear/1, delete/2, read/2, read/3, write/3]).
 -export([foldl/3, foldl/4, foldl/5, foldl/6, foldl/7]).
 -export([foreach/2, foreach/3, foreach/4, foreach/5, foreach/6]).
@@ -54,6 +54,8 @@ open(Table, Dir, Format) -> open(Table, Dir, Format, []).
 open(Table, Dir, Format, Opts) ->
 	ok = filelib:ensure_dir(Dir),
 	osmos:open(Table, [{directory, Dir}, {format, Format} | Opts]).
+
+close(Table) -> osmos:close(Table).
 
 %%%%%%%%%
 %% ops %%
@@ -160,8 +162,8 @@ select_continue(Table, Cont, NObjects) ->
 %% cmp function %%
 %%%%%%%%%%%%%%%%%%
 
-less_lo(Cmp) -> fun(Key) -> Cmp(Key) < 0 end.
+less_lo(Cmp) -> fun(Key) -> Cmp(Key) == -1 end.
 
-less_hi(Cmp) -> fun(Key) -> Cmp(Key) < 1 end.
+less_hi(Cmp) -> fun(Key) -> Cmp(Key) /= 1 end.
 
 select_all(_, _) -> true.

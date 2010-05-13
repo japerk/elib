@@ -15,7 +15,7 @@ check: src
 		-I $(ERL_LIBS)/common_test*/include/
 
 test: test.spec src FORCE
-	@run_test -pa $(PWD)/ebin -spec test.spec
+	@run_test -pa $(PWD)/ebin -pa $(PWD)/../osmos-0.0.1/src -spec test.spec
 	@rm variables-ct*
 
 test.spec: test.spec.in
@@ -24,7 +24,7 @@ test.spec: test.spec.in
 clean:
 	rm -f ebin/*.beam
 	rm -f test/*.beam
-	rm test.spec
+	rm -f test.spec
 
 doc: FORCE
 	@erl -noshell -run edoc_run application elib '"."' '[{new, true}]'
