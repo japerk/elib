@@ -10,7 +10,7 @@
 %%%%%%%%%%%%%%%%
 
 start_link(ServerName, PySpawn, PyPath) ->
-	PortOpts = [{packet, 1}, binary, {env, [{"PYTHONPATH", PyPath}]}],
+	PortOpts = [{packet, 4}, binary, {env, [{"PYTHONPATH", PyPath}]}],
 	start_link_opts(ServerName, PySpawn, PortOpts).
 
 start_link_opts(ServerName, PySpawn, PortOpts) ->
