@@ -14,7 +14,7 @@ start_link(ServerName, PySpawn, PyPath) ->
 	start_link_opts(ServerName, PySpawn, PortOpts).
 
 start_link_opts(ServerName, PySpawn, PortOpts) ->
-	gen_server:start_link(ServerName, ?MODULE, {PySpawn, PortOpts}, []).
+	gen_server:start_link({local, ServerName}, ?MODULE, {PySpawn, PortOpts}, []).
 
 request(ServerRef, Request) -> gen_server:call(ServerRef, Request).
 
