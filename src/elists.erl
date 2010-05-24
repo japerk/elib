@@ -21,7 +21,7 @@
 -module(elists).
 
 -export([first/2, prepend/2, mapfilter/2, mapfilter_chain/2,
-		 propmerge/3, sort_chain_generator/1, splitmany/2, union/2]).
+		 propmerge/3, sort_chain_generator/1, splitmany/2, sublist/3, union/2]).
 
 %% @doc Return the first element where F returns true, or none.
 first(F, List) ->
@@ -83,5 +83,8 @@ splitmany(N, List, Split) when length(List) < N ->
 splitmany(N, List, Split) ->
 	{Part, Rest} = lists:split(N, List),
 	splitmany(N, Rest, [Part | Split]).
+
+sublist(L, Start, _) when length(L) < Start -> [];
+sublist(L, Start, Limit) -> lists:sublist(L, Start, Limit).
 
 union(L1, L2) -> sets:to_list(sets:union(sets:from_list(L1), sets:from_list(L2))).
