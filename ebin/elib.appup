@@ -1,5 +1,9 @@
 {"1.6.0", [
 % upgrade instructions
+	{"1.6.0", [
+		{load_module, erlport_server},
+		{load_module, estring}
+	]},
 	{"1.5.21", [
 		{add_module, edict},
 		{add_module, erlport_server},
@@ -29,6 +33,10 @@
 	{"1.5.10", [{load_module, etable}]}
 ], [
 % downgrade instructions
+	{"1.6.0", [
+		{load_module, erlport_server},
+		{load_module, estring}
+	]},
 	{"1.5.21", [
 		{delete_module, edict},
 		{delete_module, erlport_server},
