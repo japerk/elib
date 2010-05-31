@@ -20,7 +20,7 @@
 
 -module(estring).
 
--export([format/2]).
+-export([format/2, lower/1]).
 -export([join/2, read_file/1, random/1]).
 -export([split/2, splitc/2, tokenize/2]).
 -export([replace/3, replace_all/3]).
@@ -31,6 +31,9 @@
 -export([is_utf8/1, encode_utf8/1, utf8_to_unicode/1]).
 
 format(Format, Data) -> lists:flatten(io_lib:format(Format, Data)).
+
+lower(B) when is_binary(B) -> lower(binary_to_list(B));
+lower(S) when is_list(S) -> string:to_lower(S).
 
 join([], _) -> [];
 join(List, Sep) -> string:join(List, Sep).

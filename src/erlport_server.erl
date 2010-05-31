@@ -2,7 +2,7 @@
 
 -behaviour(gen_server).
 
--export([start_link/3, start_link_opts/3, request/2]).
+-export([start_link/3, start_link_opts/3, request/2, request/3]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
 %%%%%%%%%%%%%%%%
@@ -16,7 +16,9 @@ start_link(ServerName, PySpawn, PyPath) ->
 start_link_opts(ServerName, PySpawn, PortOpts) ->
 	gen_server:start_link({local, ServerName}, ?MODULE, {PySpawn, PortOpts}, []).
 
-request(ServerRef, Request) -> gen_server:call(ServerRef, Request).
+request(ServerRef, Request) -> gen_server:call(ServerRef, Request, infinity).
+
+request(ServerRef, Request, Timeout) -> gen_server:call(ServerRef, Request, Timeout).
 
 %%%%%%%%%%%%%%%%
 %% gen_server %%
