@@ -1,6 +1,8 @@
 -module(edict).
 
--export([find_default/3, from_proplist/1]).
+-export([find_default/2, find_default/3, from_proplist/1]).
+
+find_default(Key, Dict) -> find_default(Key, Dict, undefined).
 
 %% @doc Return Default value if Key is not found in Dict.
 find_default(Key, Dict, Default) ->

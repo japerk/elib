@@ -8,26 +8,35 @@
 %% basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
 %% the License for the specific language governing rights and limitations
 %% under the License.
-%% 
-%% The Initial Developer of the Original Code is Jacob Perkins.
-%% Portions created by Jacob Perkins are Copyright 2009, Mr Buzz, Inc.
+%%
 %% All Rights Reserved.''
 %%
 %% @author Jacob Perkins
-%% @copyright 2009 Mr Buzz, Inc.
 
 %% @doc Extra lists functions.
 
 -module(elists).
 
--export([first/2, prepend/2, mapfilter/2, mapfilter_chain/2,
-		 propmerge/3, sort_chain_generator/1, splitmany/2, sublist/3, union/2]).
+-export([first/2, get_value/2, get_value/3, prepend/2,
+		 mapfilter/2, mapfilter_chain/2, propmerge/3,
+		 sort_chain_generator/1, splitmany/2, sublist/3, union/2]).
 
 %% @doc Return the first element where F returns true, or none.
 first(F, List) ->
 	case lists:dropwhile(fun(Elem) -> not F(Elem) end, List) of
 		[First | _] -> First;
 		[] -> none
+	end.
+
+get_value(Key, List) -> get_value(Key, List, undefined).
+
+%% @doc This function provides same functionality as proplists:get_value, but uses
+%% lists:keyfind, and assumes the list is of 2-tuples. Apparently lists:keyfind
+%% is much faster than proplists:get_value.
+get_value(Key, List, Default) ->
+	case lists:keyfind(Key, 1, List) of
+		{Key, Val} -> Val;
+		false -> Default
 	end.
 
 %% @equiv [Elem | List]
