@@ -1,5 +1,6 @@
-{"1.6.2", [
+{"1.6.3", [
 % upgrade instructions
+	{"1.6.2", [{load_module, estring}]},
 	{"1.6.1", [
 		{load_module, edict},
 		{load_module, elists}
@@ -37,6 +38,7 @@
 	{"1.5.10", [{load_module, etable}]}
 ], [
 % downgrade instructions
+	{"1.6.2", [{load_module, estring}]},
 	{"1.6.1", [
 		{load_module, edict},
 		{load_module, elists}
