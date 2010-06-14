@@ -10,17 +10,15 @@
 %% under the License.
 %% 
 %% The Initial Developer of the Original Code is Jacob Perkins.
-%% Portions created by Jacob Perkins are Copyright 2009, Mr Buzz, Inc.
 %% All Rights Reserved.''
 %%
 %% @author Jacob Perkins
-%% @copyright 2009 Mr Buzz, Inc.
 
 %% @doc Extra string functions that aren't available in stdlib string module.
 
 -module(estring).
 
--export([endswith/2, format/2, lower/1]).
+-export([endswith/2, format/2, lower/1, shared_prefix/2]).
 -export([join/2, read_file/1, random/1]).
 -export([split/2, splitc/2, tokenize/2]).
 -export([replace/3, replace_all/3]).
@@ -43,6 +41,12 @@ lower(S) when is_list(S) -> string:to_lower(S).
 
 join([], _) -> [];
 join(List, Sep) -> string:join(List, Sep).
+
+shared_prefix(S1, S2) -> lists:reverse(shared_prefix(S1, S2, [])).
+
+% accumulate characters from front of strings until characters are not equal
+shared_prefix([C | S1], [C | S2], Pre) -> shared_prefix(S1, S2, [C | Pre]);
+shared_prefix(_, _, Pre) -> Pre.
 
 %% @doc Splits String at first instance of Sep. This is an alternative to
 %% string:tokens that is much more efficient if you know that you only need to
