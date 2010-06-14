@@ -20,7 +20,7 @@
 
 -module(estring).
 
--export([format/2, lower/1]).
+-export([endswith/2, format/2, lower/1]).
 -export([join/2, read_file/1, random/1]).
 -export([split/2, splitc/2, tokenize/2]).
 -export([replace/3, replace_all/3]).
@@ -29,6 +29,12 @@
 -export([lcs_len/2, similar/2, partial_match/2]).
 -export([urldecode/1, querydecode/1]).
 -export([is_utf8/1, encode_utf8/1, utf8_to_unicode/1]).
+
+endswith(S, Suffix) ->
+	case string:right(S, length(Suffix)) of
+		Suffix -> true;
+		_ -> false
+	end.
 
 format(Format, Data) -> lists:flatten(io_lib:format(Format, Data)).
 
