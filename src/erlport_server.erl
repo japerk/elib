@@ -2,23 +2,31 @@
 
 -behaviour(gen_server).
 
--export([start_link/3, start_link_opts/3, request/2, request/3]).
+-export([start_link/2, start_link/3, start_link_port_opts/2, start_link_port_opts/3]).
+-export([request/2, request/3]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
+
+-define(PORT_OPTS(PyPath), [{packet, 4}, binary, {env, [{"PYTHONPATH", PyPath}]}]).
 
 %%%%%%%%%%%%%%%%
 %% public api %%
 %%%%%%%%%%%%%%%%
 
-start_link(ServerName, PySpawn, PyPath) ->
-	PortOpts = [{packet, 4}, binary, {env, [{"PYTHONPATH", PyPath}]}],
-	start_link_opts(ServerName, PySpawn, PortOpts).
+start_link(PySpawn, PyPath) ->
+	start_link_port_opts(PySpawn, ?PORT_OPTS(PyPath)).
 
-start_link_opts(ServerName, PySpawn, PortOpts) ->
-	gen_server:start_link({local, ServerName}, ?MODULE, {PySpawn, PortOpts}, []).
+start_link(Name, PySpawn, PyPath) ->
+	start_link_port_opts(Name, PySpawn, ?PORT_OPTS(PyPath)).
 
-request(ServerRef, Request) -> gen_server:call(ServerRef, Request, infinity).
+start_link_port_opts(PySpawn, PortOpts) ->
+	gen_server:start_link(?MODULE, {PySpawn, PortOpts}, []).
 
-request(ServerRef, Request, Timeout) -> gen_server:call(ServerRef, Request, Timeout).
+start_link_port_opts(Name, PySpawn, PortOpts) ->
+	gen_server:start_link(Name, ?MODULE, {PySpawn, PortOpts}, []).
+
+request(Ref, Request) -> gen_server:call(Ref, Request, infinity).
+
+request(Ref, Request, Timeout) -> gen_server:call(Ref, Request, Timeout).
 
 %%%%%%%%%%%%%%%%
 %% gen_server %%
