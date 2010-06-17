@@ -1,5 +1,6 @@
-{"1.7.0", [
+{"1.7.1", [
 % upgrade instructions
+	{"1.7.0", [{load_module, estring}]},
 	{"1.6.4", [
 		{load_module, erlport_server},
 		{add_module, round_robin_server}
@@ -46,6 +47,7 @@
 	{"1.5.10", [{load_module, etable}]}
 ], [
 % downgrade instructions
+	{"1.7.0", [{load_module, estring}]},
 	{"1.6.4", [
 		{load_module, erlport_server},
 		{delete_module, round_robin_server}

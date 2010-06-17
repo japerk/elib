@@ -1,6 +1,6 @@
 {application, elib, [
 	{description, "Extended Erlang library modules"},
-	{vsn, "1.7.0"},
+	{vsn, "1.7.1"},
 	{mod, {elib, []}},
 	{registered, [elib_sup, timeout_server]},
 	{applications, [kernel, stdlib]},
