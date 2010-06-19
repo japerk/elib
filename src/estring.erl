@@ -18,7 +18,7 @@
 
 -module(estring).
 
--export([startswith/2, endswith/2, format/2, lower/1, shared_prefix/2]).
+-export([startswith/2, endswith/2, contains/2, format/2, lower/1, shared_prefix/2]).
 -export([join/2, read_file/1, random/1]).
 -export([split/2, splitc/2, tokenize/2]).
 -export([replace/3, replace_all/3]).
@@ -30,11 +30,9 @@
 
 startswith(S, Prefix) -> lists:prefix(Prefix, S).
 
-endswith(S, Suffix) ->
-	case string:right(S, length(Suffix)) of
-		Suffix -> true;
-		_ -> false
-	end.
+endswith(S, Suffix) -> lists:suffix(Suffix, S).
+
+contains(S, Sub) -> string:str(S, Sub) /= 0.
 
 format(Format, Data) -> lists:flatten(io_lib:format(Format, Data)).
 
