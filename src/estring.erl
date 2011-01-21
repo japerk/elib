@@ -27,6 +27,7 @@
 -export([lcs_len/2, similar/2, partial_match/2]).
 -export([urldecode/1, querydecode/1]).
 -export([is_utf8/1, encode_utf8/1, utf8_to_unicode/1]).
+-export([trim/1]).
 
 startswith(S, Prefix) -> lists:prefix(Prefix, S).
 
@@ -88,7 +89,7 @@ read_file(Filename) ->
 	binary_to_list(Bin).
 
 %% @doc Replace first instance of Key in String with Val.
-%% Returns {error, notfound} if Key is not in String.
+%% Returns {error, notfound} if Ky is not in String.
 %%
 %% @spec replace(string(), string(), string()) -> Result
 %%		 Result = {ok, string()} | {error, notfound}
@@ -277,3 +278,21 @@ encode_utf8(String) -> xmerl_ucs:to_utf8(String).
 %%
 %% @equiv xmerl_ucs:to_unicode(String, 'utf-8')
 utf8_to_unicode(String) -> xmerl_ucs:to_unicode(String, 'utf-8').
+
+%% @doc Delete whitespace betwin word
+%%
+%% @equiv xmerl_ucs:trim(String, string()) -> list()
+trim(String)  ->
+    String2 = lists:dropwhile(fun is_whitespace/1, String),
+    lists:reverse(lists:dropwhile(fun is_whitespace/1, lists:reverse(String2))).
+
+is_whitespace($\s) ->
+    true;
+is_whitespace($\t) ->
+    true;
+is_whitespace($\n) ->
+    true;
+is_whitespace($\r) ->
+    true;
+is_whitespace(_Else) ->
+    false.
